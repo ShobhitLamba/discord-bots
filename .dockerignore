@@ -1,0 +1,16 @@
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+.env
+.git/
+.gitignore
+README.md
+LICENSE
+.DS_Store
+*.log

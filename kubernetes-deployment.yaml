@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: discord-bot-secrets
+type: Opaque
+stringData:
+  DISCORD_BOT_TOKEN: ""  # Set this using kubectl create secret or from .env
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: discord-yt-bot
+  labels:
+    app: discord-yt-bot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: discord-yt-bot
+  template:
+    metadata:
+      labels:
+        app: discord-yt-bot
+    spec:
+      containers:
+      - name: discord-bot
+        image: discord-yt-bot:latest
+        imagePullPolicy: Never
+        envFrom:
+        - secretRef:
+            name: discord-bot-secrets
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "200m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          exec:
+            command:
+            - python
+            - -c
+            - "import sys; sys.exit(0)"
+          initialDelaySeconds: 30
+          periodSeconds: 60
+      restartPolicy: Always
