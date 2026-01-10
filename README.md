@@ -1,5 +1,7 @@
 # Discord YouTube Player Bot
 
+> **Note:** This README currently documents the YouTube Player Bot. As more bots are added to this repository, this documentation will be updated to include setup and usage instructions for all bots.
+
 A Discord bot that plays YouTube audio in voice channels. Simply mention the bot with a YouTube link, and it will join your voice channel and play the audio. Includes both traditional prefix commands and modern slash commands.
 
 ## Features
