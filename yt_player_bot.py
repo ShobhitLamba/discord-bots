@@ -126,6 +126,11 @@ async def on_message(message):
                             message.channel.send(f"❌ Playback error: {error}"),
                             bot.loop
                         )
+                    # Disconnect after playback finishes
+                    asyncio.run_coroutine_threadsafe(
+                        voice_client.disconnect(),
+                        bot.loop
+                    )
                 
                 voice_client.play(player, after=after_playing)
                 await message.channel.send(f"🎶 Now playing: **{player.title}**")
