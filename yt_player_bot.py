@@ -5,6 +5,7 @@ from discord.ext import commands
 import yt_dlp
 import asyncio
 import re
+import sys
 from dotenv import load_dotenv
 import os
 
@@ -18,6 +19,7 @@ if opus_path and os.path.exists(opus_path):
 # Bot setup with intents
 intents = discord.Intents.default()
 intents.message_content = True
+intents.voice_states = True
 
 bot = commands.Bot(command_prefix='!', intents=intents)
 
