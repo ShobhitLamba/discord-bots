@@ -1,11 +1,10 @@
 FROM python:3.12-slim
 
 # Install system dependencies for audio processing
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     ffmpeg \
     libopus0 \
     libopus-dev \
-    libsodium-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
