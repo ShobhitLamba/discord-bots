@@ -38,7 +38,7 @@ Mention the bot with a YouTube URL to play audio:
 - **Opus** - Audio codec for Discord voice
 
 ### Python Libraries
-- `discord.py==2.6.4` - Discord API wrapper
+- `discord.py==2.7.1` - Discord API wrapper
 - `python-dotenv==1.2.1` - Environment variable management
 - `yt-dlp==2025.12.8` - YouTube video/audio downloader
 - `PyNaCl==1.6.2` - Voice support for Discord
@@ -139,8 +139,20 @@ docker build -t discord-yt-bot:latest .
 ```bash
 docker run -d \
   --name discord-bot \
+  --network host \
+  --env-file .env \
+  yt-player-bot:latest
+```
+
+> **Important:** `--network host` is required for Discord voice to work. Without it, Docker's default NAT blocks the UDP traffic that Discord uses for voice connections, causing repeated connection failures (WebSocket close code 4017).
+
+Alternatively, pass the token directly:
+```bash
+docker run -d \
+  --name discord-bot \
+  --network host \
   -e DISCORD_BOT_TOKEN='your-bot-token-here' \
-  discord-yt-bot:latest
+  yt-player-bot:latest
 ```
 
 ### Check Logs
@@ -266,7 +278,9 @@ kubectl rollout restart deployment/discord-yt-bot
 - Try kicking and re-inviting the bot to your server
 - Verify bot has `applications.commands` scope
 
-### Voice Connection Issues
+### Voice Connection Issues / WebSocket 4017 Error
+If you see `ConnectionClosed: Shard ID None WebSocket closed with 4017` repeatedly in logs:
+- **Run Docker with `--network host`** — Discord voice uses UDP, which Docker's default bridge network blocks. Host networking gives the container direct access to your machine's network stack.
 - Ensure FFmpeg and Opus are installed in the container
 - Check bot has "Connect" and "Speak" permissions
 - Verify you're in a voice channel when playing audio
