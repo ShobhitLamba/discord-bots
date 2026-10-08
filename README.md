@@ -291,7 +291,12 @@ kubectl logs -l app=discord-yt-bot
 ```
 discord-bots/
 ├── yt_player_bot.py           # Main bot code
-├── requirements.txt            # Python dependencies
+├── requirements.txt            # Runtime Python dependencies
+├── requirements-dev.txt        # Test / dev dependencies
+├── pytest.ini                 # pytest configuration
+├── tests/
+│   ├── conftest.py            # Session-wide mocks (discord, yt_dlp)
+│   └── test_yt_player_bot.py  # Full test suite (~75 tests)
 ├── Dockerfile                  # Docker image configuration
 ├── .dockerignore              # Files to exclude from Docker image
 ├── kubernetes-deployment.yaml  # Kubernetes deployment manifest
@@ -307,17 +312,74 @@ discord-bots/
 | `DISCORD_BOT_TOKEN` | ✅ Yes | Your Discord bot token from Developer Portal |
 | `OPUS_PATH` | ❌ No | Path to opus library (auto-detected if not set) |
 
-## Development
+## Testing
 
-### Running Tests Locally
+The repository ships with a full unit-test suite under `tests/`. All tests run without a Discord token or internet connection – every Discord API call and yt-dlp network call is mocked.
+
+### Test Coverage
+
+| Area | What's tested |
+|------|--------------|
+| Configuration | `YTDL_OPTIONS` and `FFMPEG_OPTIONS` constants |
+| YouTube URL regex | Valid URLs, invalid URLs, extraction from messages |
+| `YTDLSource` class | `__init__` fields, `from_url` classmethod, playlist handling |
+| `on_ready` event | Slash-command sync, error handling |
+| `on_message` handler | Own-message guard, mention detection, VC join/move, playback control, error replies |
+| Prefix commands | `!leave`, `!pause`, `!resume`, `!stop` – both happy-path and error branches |
+| Slash commands | `/leave`, `/pause`, `/resume`, `/stop` – both happy-path and error branches |
+
+### Quick Start
 
 ```bash
-# Activate virtual environment
-source venv/bin/activate
+# 1. Activate virtual environment (create it first if needed)
+python3 -m venv venv
+source venv/bin/activate          # Windows: venv\Scripts\activate
 
-# Run bot
-python yt_player_bot.py
+# 2. Install runtime + test dependencies
+pip install -r requirements.txt
+pip install -r requirements-dev.txt
+
+# 3. Run the full test suite
+pytest
 ```
+
+Expected output:
+```
+75 passed in 0.06s
+```
+
+### Useful Test Commands
+
+```bash
+# Verbose output – see every test name
+pytest -v
+
+# Run a single test class
+pytest tests/test_yt_player_bot.py::TestOnMessage -v
+
+# Run tests matching a keyword
+pytest -k "regex or pause"
+
+# Stop on first failure
+pytest -x
+
+# Coverage report (requires pytest-cov, already in requirements-dev.txt)
+pytest --cov=yt_player_bot --cov-report=term-missing
+```
+
+### Project Test Structure
+
+```
+tests/
+├── conftest.py           # Session-wide mocks for discord & yt_dlp
+└── test_yt_player_bot.py # All test cases (~75 tests, 7 sections)
+```
+
+> **Note:** `conftest.py` patches `discord` and `yt_dlp` in `sys.modules` before the bot module is imported, so no real credentials or network access are ever needed.
+
+---
+
+## Development
 
 ### Updating Dependencies
 

@@ -1,0 +1,4 @@
+# Dev / test dependencies – not needed to run the bot
+pytest>=7.4
+pytest-asyncio>=0.23
+pytest-cov>=4.1
