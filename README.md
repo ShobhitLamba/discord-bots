@@ -404,7 +404,9 @@ pip freeze > requirements.txt
 
 ## License
 
-MIT License - See [LICENSE](LICENSE) file for details
+Copyright (c) 2026 Shobhit Lamba
+
+This project is licensed under the GNU General Public License v3.0 (GPL-3.0) - See [LICENSE](LICENSE) file for details
 
 ## Support
 
